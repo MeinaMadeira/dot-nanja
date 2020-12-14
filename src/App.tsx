@@ -1,10 +1,8 @@
 import React, {useState} from 'react'
-import firebase from "firebase"
-import './firebase.ts'
+import firebase, { storage } from './firebase'
 
 
 function App() {
-  const storage = firebase.storage()
   const [image, setImage] = useState<File>()
   const [imageUrl, setImageUrl] = useState("")
 
