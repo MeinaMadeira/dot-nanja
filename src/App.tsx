@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
+import './App.css'
 import firebase, { storage } from './firebase'
 
 
 function App() {
   const [image, setImage] = useState<File>()
-  const [imageUrl, setImageUrl] = useState("")
   const [vSize, setVSize] = useState(0)
 
   const handleImage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,14 +26,14 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="App">
        <h1>画像アップロード</h1>
       <form onSubmit={onSubmit}>
         <input type="file" onChange={handleImage} />
         <button>Upload</button>
       </form>
 
-      <p id="ID001"></p>
+      <div id="ID001"></div>
     </div>
 
   )
