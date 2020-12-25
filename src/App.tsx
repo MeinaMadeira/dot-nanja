@@ -5,20 +5,25 @@ import firebase, { storage } from './firebase'
 
 function App() {
   const [image, setImage] = useState<File>()
-  const [vSize, setVSize] = useState(0)
 
-  const handleImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if(event.target.files != null){
-      const image = event.target.files[0]
+  const handleImage = (hIEvent: React.ChangeEvent<HTMLInputElement>) => {
+    if(hIEvent.target.files != null){
+      const file = hIEvent.target.files[0]
       const fileReader = new FileReader()
-      let imageVUrl = ""
+      const img = new Image()
+      const canvas = document.getElementById("aaa") as HTMLCanvasElement
+      const ctx =  canvas.getContext('2d')
 
-      fileReader.onload = () => {
-        imageVUrl += "<img alt=" + image.name + " src=" + fileReader.result + " />"
-        document.getElementById("ID001")!.innerHTML = imageVUrl
+      fileReader.onload = (event) => {
+        img.onload = () => {
+          if(ctx != null){
+            ctx.drawImage(img,0,0)
+          }
+        } 
+        img.src = event.target?.result as string 
       }
-      fileReader.readAsDataURL(image)
-      setImage(image)
+      fileReader.readAsDataURL(file)
+      setImage(file)
     }
   }
 
@@ -34,6 +39,7 @@ function App() {
       </form>
 
       <div id="ID001"></div>
+      <canvas id="aaa" width="640" height="480" ></canvas>
     </div>
 
   )

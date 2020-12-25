@@ -3,6 +3,8 @@
 }
 
 img {
-  width: 96px;
-  height: 65px;
+  clip: rect(300px 300px 300px 300px);
+  border: 3px #000000 solid;
 }
+
+.example { }
