@@ -2,9 +2,6 @@
   text-align: center;
 }
 
-img {
-  clip: rect(300px 300px 300px 300px);
-  border: 3px #000000 solid;
+canvas {
+  border: 1px #000000 solid;
 }
-
-.example { }
