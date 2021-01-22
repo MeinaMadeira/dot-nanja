@@ -11,6 +11,9 @@ function App() {
       const img = new Image()
       const canvas = document.getElementById("aaa") as HTMLCanvasElement
       const ctx =  canvas.getContext('2d')
+      if(ctx != null){
+        ctx.clearRect(0,0,640,640)
+      }
       fileReader.onload = (event: ProgressEvent<FileReader>) => {
         img.onload = () => {
           if(ctx != null){
@@ -37,7 +40,7 @@ function App() {
     const ctxB =  canvasB.getContext('2d')
 
     if(ctxA != null && ctxB != null){
-      var grid = 32 
+      var grid = 32
       var gridSize = canvasA.width / grid
       
       for (var m = 0; m < grid; m += 1) {
@@ -66,7 +69,7 @@ function App() {
         }
       }
 
-      drawGrid()
+      //drawGrid()
     }
   }
 
@@ -107,7 +110,6 @@ function App() {
        <h1>ドット絵変換ジェネレータ</h1>
       <form onSubmit={onSubmit}>
         <input type="file" onChange={handleImage} />
-        <button>Upload</button>
       </form>
       <canvas id="aaa" width="640" height="640" ></canvas>
       <canvas id="bbb" width="640" height="640" ></canvas>
