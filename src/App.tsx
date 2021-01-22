@@ -32,31 +32,33 @@ function App() {
   const handleImage = (hIEvent: React.ChangeEvent<HTMLInputElement>) => {
     if(hIEvent.target.files != null){
       const file = hIEvent.target.files[0]
-      const fileReader = new FileReader()
-      const img = new Image()
-      const canvasA = document.getElementById("prevCanvas") as HTMLCanvasElement
-      const canvasB = document.getElementById("postCanvas") as HTMLCanvasElement
-      const ctxA =  canvasA.getContext('2d')
-      const ctxB =  canvasB.getContext('2d')
-      if(ctxA != null && ctxB != null){
-        ctxA.clearRect(0,0,640,640)
-        ctxB.clearRect(0,0,640,640)
-      }
-      fileReader.onload = (event: ProgressEvent<FileReader>) => {
-        img.onload = () => {
-          if(ctxA != null){
-            var imgSize = 0
-            if(img.width > img.height){
-              imgSize = img.width
-            }else{
-              imgSize = img.height
+      if(file != undefined){
+        const fileReader = new FileReader()
+        const img = new Image()
+        const canvasA = document.getElementById("prevCanvas") as HTMLCanvasElement
+        const canvasB = document.getElementById("postCanvas") as HTMLCanvasElement
+        const ctxA =  canvasA.getContext('2d')
+        const ctxB =  canvasB.getContext('2d')
+        if(ctxA != null && ctxB != null){
+          ctxA.clearRect(0,0,640,640)
+          ctxB.clearRect(0,0,640,640)
+        }
+        fileReader.onload = (event: ProgressEvent<FileReader>) => {
+          img.onload = () => {
+            if(ctxA != null){
+              var imgSize = 0
+              if(img.width > img.height){
+                imgSize = img.width
+              }else{
+                imgSize = img.height
+              }
+              ctxA.drawImage(img,0,0,imgSize,imgSize,0,0,640,640)
             }
-            ctxA.drawImage(img,0,0,imgSize,imgSize,0,0,640,640)
-          }
-        } 
-        img.src = event.target?.result as string 
+          } 
+          img.src = event.target?.result as string 
+        }
+        fileReader.readAsDataURL(file)
       }
-      fileReader.readAsDataURL(file)
     }
   }
 
@@ -135,18 +137,19 @@ function App() {
   return (
     <div className="App">
       <h1>ドット絵変換ジェネレータ</h1>
-      <input type="file" onChange={handleImage} />
+      <input type="file" id="pict" onChange={handleImage} />
+
       <input type="radio" name="grid" value="16" onChange={handleGrid} checked={grid === 16} />
       <label>16x16</label>
       <input type="radio" name="grid" value="32" onChange={handleGrid} checked={grid === 32} />
       <label>32x32</label>
       <input type="radio" name="grid" value="64" onChange={handleGrid} checked={grid === 64} />
       <label>64x64</label>    
-
+      <br />
       <input type="checkbox" id="gridSwitch" name="gridSwitch" value={gridSwitch} onChange={switchGrid} checked={gridSwitch === 0} />
       <label>グリッドを描画する</label>
-
-      <input type="button" value="変換" onClick={pixelize}/>
+      <br />
+      <input type="button" value="ドットに変換！！" onClick={pixelize}/>
       <br />
       <canvas id="prevCanvas" width="640" height="640" ></canvas>
       <canvas id="postCanvas" width="640" height="640" ></canvas>
