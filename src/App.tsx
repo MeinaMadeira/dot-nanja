@@ -19,7 +19,7 @@ function App() {
     if(hIEvent.target.value != null){
       var gridSwitchStr = hIEvent.target.value
       var gridSwitchNum: number = +gridSwitchStr
-      if(gridSwitchNum == 0){
+      if(gridSwitchNum === 0){
         gridSwitchNum = 1
       }else{
         gridSwitchNum = 0
@@ -32,7 +32,7 @@ function App() {
   const handleImage = (hIEvent: React.ChangeEvent<HTMLInputElement>) => {
     if(hIEvent.target.files != null){
       const file = hIEvent.target.files[0]
-      if(file != undefined){
+      if(file !== undefined){
         const fileReader = new FileReader()
         const img = new Image()
         const canvasA = document.getElementById("prevCanvas") as HTMLCanvasElement
@@ -74,7 +74,6 @@ function App() {
       for (var m = 0; m < grid; m += 1) {
         for (var n = 0; n < grid; n += 1) {
           var imageData = ctxA.getImageData(m * gridSize,n * gridSize,gridSize,gridSize)
-          var pixelNum = gridSize * gridSize
           var data = imageData.data
           var pRed = 0
           var pGreen = 0
@@ -92,6 +91,8 @@ function App() {
           pBlue = pBlue / (data.length / 4)
           pAlpha = pAlpha / (data.length / 4)
 
+          //var pColor = (pRed + pBlue + pGreen) / 3
+
           for (var j = 0; j < data.length; j += 4) {
             data[j]      = pRed   // red
             data[j + 1]  = pGreen // green
@@ -104,7 +105,7 @@ function App() {
         ctxB.putImageData(imageData,m * gridSize,n * gridSize)
         }
       }
-      if(gridSwitch == 0){
+      if(gridSwitch === 0){
         drawGrid()
       }
       //
