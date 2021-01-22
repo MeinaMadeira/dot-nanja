@@ -18,8 +18,8 @@ function App() {
       const file = hIEvent.target.files[0]
       const fileReader = new FileReader()
       const img = new Image()
-      const canvasA = document.getElementById("aaa") as HTMLCanvasElement
-      const canvasB = document.getElementById("bbb") as HTMLCanvasElement
+      const canvasA = document.getElementById("prevCanvas") as HTMLCanvasElement
+      const canvasB = document.getElementById("postCanvas") as HTMLCanvasElement
       const ctxA =  canvasA.getContext('2d')
       const ctxB =  canvasB.getContext('2d')
       if(ctxA != null && ctxB != null){
@@ -45,8 +45,8 @@ function App() {
   }
 
   const pixelize = () => {
-    const canvasA = document.getElementById("aaa") as HTMLCanvasElement
-    const canvasB = document.getElementById("bbb") as HTMLCanvasElement
+    const canvasA = document.getElementById("prevCanvas") as HTMLCanvasElement
+    const canvasB = document.getElementById("postCanvas") as HTMLCanvasElement
     const ctxA =  canvasA.getContext('2d')
     const ctxB =  canvasB.getContext('2d')
 
@@ -56,24 +56,32 @@ function App() {
       for (var m = 0; m < grid; m += 1) {
         for (var n = 0; n < grid; n += 1) {
           var imageData = ctxA.getImageData(m * gridSize,n * gridSize,gridSize,gridSize)
+          var pixelNum = gridSize * gridSize
           var data = imageData.data
           var pRed = 0
           var pGreen = 0
           var pBlue = 0
+          var pAlpha = 0
 
           for (var i = 0; i < data.length; i += 4) {
             pRed     += data[i]   // red
             pGreen   += data[i + 1] // green
             pBlue    += data[i + 2] // blue
+            pAlpha   += data[i + 3] // alpha
           }
           pRed = pRed / (data.length / 4)
           pGreen = pGreen / (data.length / 4)
           pBlue = pBlue / (data.length / 4)
-        
+          pAlpha = pAlpha / (data.length / 4)
+
           for (var j = 0; j < data.length; j += 4) {
             data[j]      = pRed   // red
             data[j + 1]  = pGreen // green
             data[j + 2]  = pBlue // blue
+            data[j + 3]  = 255
+            if(pAlpha < 255){
+              data[j + 3]  = 0
+            }
           }
         ctxB.putImageData(imageData,m * gridSize,n * gridSize)
         }
@@ -84,11 +92,9 @@ function App() {
   }
 
   const drawGrid = () => {
-    const grid = 32
-    const canvas = document.getElementById("bbb") as HTMLCanvasElement
+    const canvas = document.getElementById("postCanvas") as HTMLCanvasElement
     const ctx =  canvas.getContext('2d')
     if(ctx != null){
-
       ctx.strokeStyle = 'white'
       ctx.lineWidth = 1
 
@@ -121,8 +127,8 @@ function App() {
 
       <input type="button" value="変換" onClick={pixelize}/>
       <br />
-      <canvas id="aaa" width="640" height="640" ></canvas>
-      <canvas id="bbb" width="640" height="640" ></canvas>
+      <canvas id="prevCanvas" width="640" height="640" ></canvas>
+      <canvas id="postCanvas" width="640" height="640" ></canvas>
     </div>
 
   )
