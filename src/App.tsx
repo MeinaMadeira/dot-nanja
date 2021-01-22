@@ -1,30 +1,41 @@
-import React from 'react'
+import React, {useState} from 'react'
 import './App.css'
 
 
 function App() {
+
+  const [grid, setGrid] = useState(32)
+  const handleGrid = (hIEvent: React.ChangeEvent<HTMLInputElement>) => {
+    if(hIEvent.target.value != null){
+      var gridStr = hIEvent.target.value
+      var gridNum: number = +gridStr
+      setGrid(gridNum)
+    }
+  }
 
   const handleImage = (hIEvent: React.ChangeEvent<HTMLInputElement>) => {
     if(hIEvent.target.files != null){
       const file = hIEvent.target.files[0]
       const fileReader = new FileReader()
       const img = new Image()
-      const canvas = document.getElementById("aaa") as HTMLCanvasElement
-      const ctx =  canvas.getContext('2d')
-      if(ctx != null){
-        ctx.clearRect(0,0,640,640)
+      const canvasA = document.getElementById("aaa") as HTMLCanvasElement
+      const canvasB = document.getElementById("bbb") as HTMLCanvasElement
+      const ctxA =  canvasA.getContext('2d')
+      const ctxB =  canvasB.getContext('2d')
+      if(ctxA != null && ctxB != null){
+        ctxA.clearRect(0,0,640,640)
+        ctxB.clearRect(0,0,640,640)
       }
       fileReader.onload = (event: ProgressEvent<FileReader>) => {
         img.onload = () => {
-          if(ctx != null){
+          if(ctxA != null){
             var imgSize = 0
             if(img.width > img.height){
               imgSize = img.width
             }else{
               imgSize = img.height
             }
-            ctx.drawImage(img,0,0,imgSize,imgSize,0,0,640,640)
-            pixelize()
+            ctxA.drawImage(img,0,0,imgSize,imgSize,0,0,640,640)
           }
         } 
         img.src = event.target?.result as string 
@@ -40,7 +51,6 @@ function App() {
     const ctxB =  canvasB.getContext('2d')
 
     if(ctxA != null && ctxB != null){
-      var grid = 32
       var gridSize = canvasA.width / grid
       
       for (var m = 0; m < grid; m += 1) {
@@ -73,9 +83,6 @@ function App() {
     }
   }
 
-
-
-
   const drawGrid = () => {
     const grid = 32
     const canvas = document.getElementById("bbb") as HTMLCanvasElement
@@ -101,16 +108,19 @@ function App() {
     }
   }
 
-  const onSubmit = () => {
-
-  }
-
   return (
     <div className="App">
-       <h1>ドット絵変換ジェネレータ</h1>
-      <form onSubmit={onSubmit}>
-        <input type="file" onChange={handleImage} />
-      </form>
+      <h1>ドット絵変換ジェネレータ</h1>
+      <input type="file" onChange={handleImage} />
+      <input type="radio" name="grid" value="16" onChange={handleGrid} checked={grid === 16} />
+      <label>16x16</label>
+      <input type="radio" name="grid" value="32" onChange={handleGrid} checked={grid === 32} />
+      <label>32x32</label>
+      <input type="radio" name="grid" value="64" onChange={handleGrid} checked={grid === 64} />
+      <label>64x64</label>    
+
+      <input type="button" value="変換" onClick={pixelize}/>
+      <br />
       <canvas id="aaa" width="640" height="640" ></canvas>
       <canvas id="bbb" width="640" height="640" ></canvas>
     </div>
