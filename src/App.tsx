@@ -5,6 +5,8 @@ import './App.css'
 function App() {
 
   const [grid, setGrid] = useState(32)
+  const [gridSwitch, setGridSwitch] = useState(0)
+
   const handleGrid = (hIEvent: React.ChangeEvent<HTMLInputElement>) => {
     if(hIEvent.target.value != null){
       var gridStr = hIEvent.target.value
@@ -12,6 +14,20 @@ function App() {
       setGrid(gridNum)
     }
   }
+
+  const switchGrid = (hIEvent: React.ChangeEvent<HTMLInputElement>) => {
+    if(hIEvent.target.value != null){
+      var gridSwitchStr = hIEvent.target.value
+      var gridSwitchNum: number = +gridSwitchStr
+      if(gridSwitchNum == 0){
+        gridSwitchNum = 1
+      }else{
+        gridSwitchNum = 0
+      }
+      setGridSwitch(gridSwitchNum)
+    }
+  }
+
 
   const handleImage = (hIEvent: React.ChangeEvent<HTMLInputElement>) => {
     if(hIEvent.target.files != null){
@@ -79,15 +95,17 @@ function App() {
             data[j + 1]  = pGreen // green
             data[j + 2]  = pBlue // blue
             data[j + 3]  = 255
-            if(pAlpha < 255){
+            if(pAlpha < 128){
               data[j + 3]  = 0
             }
           }
         ctxB.putImageData(imageData,m * gridSize,n * gridSize)
         }
       }
-
-      //drawGrid()
+      if(gridSwitch == 0){
+        drawGrid()
+      }
+      //
     }
   }
 
@@ -124,6 +142,9 @@ function App() {
       <label>32x32</label>
       <input type="radio" name="grid" value="64" onChange={handleGrid} checked={grid === 64} />
       <label>64x64</label>    
+
+      <input type="checkbox" id="gridSwitch" name="gridSwitch" value={gridSwitch} onChange={switchGrid} checked={gridSwitch === 0} />
+      <label>グリッドを描画する</label>
 
       <input type="button" value="変換" onClick={pixelize}/>
       <br />
