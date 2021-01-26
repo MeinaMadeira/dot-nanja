@@ -91,11 +91,13 @@ function App() {
     const ctxB =  canvasB.getContext('2d')
     
     if(ctxA != null && ctxB != null){
-      var gridSize = canvasA.width / grid
+      console.log(canvasB.width/grid)
+      var gridSizeA = canvasA.width / grid
+      var gridSizeB = canvasB.width / grid
       
       for (var m = 0; m < grid; m += 1) {
         for (var n = 0; n < grid; n += 1) {
-          var imageData = ctxA.getImageData(m * gridSize,n * gridSize,gridSize,gridSize)
+          var imageData = ctxA.getImageData(m * gridSizeA,n * gridSizeA,gridSizeA,gridSizeA)
           var data = imageData.data
           var pRed = 0
           var pGreen = 0
@@ -114,11 +116,11 @@ function App() {
             pBlue = pBlue / (data.length / 4)
             pAlpha = pAlpha / (data.length / 4)
           }else{
-            if(bright == 8){
+            if(bright === 8){
               pRed = reduceColor8(pRed / (data.length / 4))
               pGreen = reduceColor8(pGreen / (data.length / 4))
               pBlue = reduceColor8(pBlue / (data.length / 4))
-            }else if(bright == 27){
+            }else if(bright === 27){
               pRed = reduceColor27(pRed / (data.length / 4))
               pGreen = reduceColor27(pGreen / (data.length / 4))
               pBlue = reduceColor27(pBlue / (data.length / 4))
@@ -142,7 +144,7 @@ function App() {
               data[j + 3]  = 0
             }
           }
-        ctxB.putImageData(imageData,m * gridSize,n * gridSize)
+        ctxB.putImageData(imageData,m * gridSizeB,n * gridSizeB,0,0,gridSizeB,gridSizeB,)
         }
       }
       if(gridSwitch === 1){
@@ -213,13 +215,15 @@ function App() {
 
   return (
     <div className="App">
-      <h1>ドット絵変換ジェネレータ</h1>
+      <h1>ドット絵変換ジェネレータ（仮）</h1>
       <input type="file" id="pict" onChange={handleImage} />
 
       <br />
       <input type="checkbox" id="gridSwitch" name="gridSwitch" value={gridSwitch} onChange={switchGrid} checked={gridSwitch === 1} />
       <label>グリッドを描画する</label>
 
+      <br />
+      <label>ピクセル数選択：</label>
       <input type="radio" name="grid" value="16" onChange={handleGrid} checked={grid === 16} />
       <label>16x16</label>
       <input type="radio" name="grid" value="32" onChange={handleGrid} checked={grid === 32} />
@@ -229,13 +233,13 @@ function App() {
       
       <br />
       <input type="checkbox" id="switchBright" name="switchBright" value={brightSwitch} onChange={switchBright} checked={brightSwitch === 1} />
-      <label>減色処理をONにする</label>
+      <label>減色処理をONにする：</label>
 
-      <input type="radio" name="bright" value="8" onChange={handleBright} checked={bright === 8} />
+      <input type="radio" name="bright" value="8" onChange={handleBright} checked={bright === 8} disabled={brightSwitch === 0}/>
       <label>8色</label>
-      <input type="radio" name="bright" value="27" onChange={handleBright} checked={bright === 27} />
+      <input type="radio" name="bright" value="27" onChange={handleBright} checked={bright === 27}  disabled={brightSwitch === 0}/>
       <label>27色</label>
-      <input type="radio" name="bright" value="64" onChange={handleBright} checked={bright === 64} />
+      <input type="radio" name="bright" value="64" onChange={handleBright} checked={bright === 64}  disabled={brightSwitch === 0}/>
       <label>64色</label>  
 
       <br />
