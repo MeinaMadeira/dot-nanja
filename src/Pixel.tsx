@@ -4,6 +4,14 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import Drawer from '@material-ui/core/Drawer'
+import Divider from '@material-ui/core/Divider'
+import Button from '@material-ui/core/Button'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import FormControl from '@material-ui/core/FormControl'
+import FormLabel from '@material-ui/core/FormLabel'
+import Radio from '@material-ui/core/Radio'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import Checkbox from '@material-ui/core/Checkbox'
 import './App.css'
 
 
@@ -274,35 +282,59 @@ function Pixel() {
       >
         <Toolbar />
         <div className={classes.drawerContainer}>
-          <br />
           <canvas id="prevCanvas" width="240" height="240" ></canvas>
-          <br />
-          <input type="file" id="pict" onChange={handleImage} />
-          <br />
-          <input type="checkbox" id="gridSwitch" name="gridSwitch" value={gridSwitch} onChange={switchGrid} checked={gridSwitch === 1} />
-          <label>グリッドを描画する</label>
-          <br />
-          <label>ピクセル数選択</label>
-          <br />
-          <input type="radio" name="grid" value="16" onChange={handleGrid} checked={grid === 16} />
-          <label>16x16</label>
-          <input type="radio" name="grid" value="32" onChange={handleGrid} checked={grid === 32} />
-          <label>32x32</label>
-          <input type="radio" name="grid" value="64" onChange={handleGrid} checked={grid === 64} />
-          <label>64x64</label>    
 
-          <br />
-          <input type="checkbox" id="switchBright" name="switchBright" value={brightSwitch} onChange={switchBright} checked={brightSwitch === 1} />
-          <label>減色処理をする</label>
-          <br />
-          <input type="radio" name="bright" value="8" onChange={handleBright} checked={bright === 8} disabled={brightSwitch === 0}/>
-          <label>8色</label>
-          <input type="radio" name="bright" value="27" onChange={handleBright} checked={bright === 27}  disabled={brightSwitch === 0}/>
-          <label>27色</label>
-          <input type="radio" name="bright" value="64" onChange={handleBright} checked={bright === 64}  disabled={brightSwitch === 0}/>
-          <label>64色</label>  
-          <br />
-          <input type="button" value="ドットに変換！！" onClick={pixelize}/>
+          <Button variant="contained" component="label">
+            ファイルを選択
+            <input type="file" id="pict" onChange={handleImage} style={{ display: "none" }} />
+          </Button>
+          <Divider />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={gridSwitch === 1}
+                onChange={switchGrid}
+                name="gridSwitch"
+                value={gridSwitch}
+                color="primary"
+              />
+            }
+            label="グリッドを描画する"
+          />
+          <Divider />
+          <FormControl component="fieldset">
+            <FormLabel component="legend">ピクセル幅数選択</FormLabel>
+            <RadioGroup name="grid" defaultValue="32" onChange={handleGrid} row>
+              <FormControlLabel value="16" control={<Radio  color="primary" />} label="16x16" labelPlacement="bottom" />
+              <FormControlLabel value="32" control={<Radio  color="primary" />} label="32x32" labelPlacement="bottom" />
+              <FormControlLabel value="64" control={<Radio  color="primary" />} label="64x64" labelPlacement="bottom" />
+            </RadioGroup> 
+          </FormControl>
+
+          <Divider />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={brightSwitch === 1}
+                onChange={switchBright}
+                name="switchBright"
+                value={brightSwitch}
+                color="primary"
+              />
+            }
+            label="減色処理をする"
+          />
+          
+          <FormControl component="fieldset">
+            <RadioGroup name="bright" defaultValue="27" onChange={handleBright} row>
+              <FormControlLabel value="8" control={<Radio  color="primary" disabled={brightSwitch === 0} />} label="8色" labelPlacement="bottom" />
+              <FormControlLabel value="27" control={<Radio  color="primary" disabled={brightSwitch === 0} />} label="27色" labelPlacement="bottom" />
+              <FormControlLabel value="64" control={<Radio  color="primary" disabled={brightSwitch === 0} />} label="64色" labelPlacement="bottom" />
+            </RadioGroup> 
+          </FormControl>
+
+          <Divider />
+          <Button variant="contained" onClick={pixelize}>変換！</Button>
         </div>
       </Drawer>
 
