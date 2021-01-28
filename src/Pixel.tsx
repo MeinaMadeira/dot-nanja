@@ -1,7 +1,13 @@
 import React, {useState} from 'react'
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
+import clsx from 'clsx'
+import { createStyles, Theme,useTheme, makeStyles } from '@material-ui/core/styles'
+import CssBaseline from '@material-ui/core/CssBaseline'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
+import IconButton from '@material-ui/core/IconButton'
+import MenuIcon from '@material-ui/icons/Menu'
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
+import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import Typography from '@material-ui/core/Typography'
 import Drawer from '@material-ui/core/Drawer'
 import Divider from '@material-ui/core/Divider'
@@ -22,16 +28,26 @@ function Pixel() {
   createStyles({
     root: {
       display: 'flex',
-      flexGrow: 1,
+    },
+    appBar: {
+      transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+    },
+    appBarShift: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
+      transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
     },
     menuButton: {
       marginRight: theme.spacing(2),
     },
-    title: {
-      flexGrow: 1,
-    },
-    appBar: {
-      zIndex: theme.zIndex.drawer + 1,
+    hide: {
+      display: 'none',
     },
     drawer: {
       width: drawerWidth,
@@ -40,20 +56,47 @@ function Pixel() {
     drawerPaper: {
       width: drawerWidth,
     },
-    drawerContainer: {
-      overflow: 'auto',
+    drawerHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: theme.spacing(0, 1),
+      // necessary for content to be below app bar
+      ...theme.mixins.toolbar,
+      justifyContent: 'flex-end',
     },
     content: {
       flexGrow: 1,
       padding: theme.spacing(3),
+      transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+      marginLeft: -drawerWidth,
+    },
+    contentShift: {
+      transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginLeft: 0,
     },
   })
   )
   const classes = useStyles()
+  const theme = useTheme()
   const [grid, setGrid] = useState(32)
   const [gridSwitch, setGridSwitch] = useState(0)
   const [bright, setBright] = useState(27)
   const [brightSwitch, setBrightSwitch] = useState(0)
+  const [open, setOpen] = useState(false)
+
+  const handleDrawerOpen = () => {
+    setOpen(true)
+  }
+
+  const handleDrawerClose = () => {
+    setOpen(false)
+  }
 
   const handleGrid = (hIEvent: React.ChangeEvent<HTMLInputElement>) => {
     if(hIEvent.target.value != null){
@@ -266,22 +309,37 @@ function Pixel() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="fixed" className={classes.appBar}>
+      <CssBaseline />
+      <AppBar position="fixed" className={clsx(classes.appBar, {[classes.appBarShift]: open,})}>
           <Toolbar>
-            <Typography variant="h4" align="left" className={classes.title}>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            className={clsx(classes.menuButton, open && classes.hide)}
+          >
+            <MenuIcon />
+          </IconButton>
+            <Typography variant="h4" align="left">
               ピクセルアートフィルター
             </Typography>
           </Toolbar>
       </AppBar>
       <Drawer
         className={classes.drawer}
-        variant="permanent"
+        variant="persistent"
+        anchor="left"
+        open={open}
         classes={{
           paper: classes.drawerPaper,
         }}
       >
-        <Toolbar />
-        <div className={classes.drawerContainer}>
+        <div className={classes.drawerHeader}>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
+        </div>
           <canvas id="prevCanvas" width="240" height="240" ></canvas>
 
           <Button variant="contained" component="label">
@@ -335,11 +393,12 @@ function Pixel() {
 
           <Divider />
           <Button variant="contained" onClick={pixelize}>変換！</Button>
-        </div>
       </Drawer>
 
-      <main className={classes.content}>
-        <Toolbar />  
+      <main className={clsx(classes.content, {
+          [classes.contentShift]: open,
+        })}>
+        <div className={classes.drawerHeader} />
         <canvas id="postCanvas" width="640" height="640" ></canvas>
       </main>
     </div>
