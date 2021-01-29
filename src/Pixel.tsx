@@ -265,6 +265,11 @@ function Pixel() {
       ctx.lineWidth = 1
 
       for(var i = 0;i < grid;i++){
+        if(i % 10 === 5){
+          ctx.lineWidth = 3
+        }else if(ctx.lineWidth !== 1){
+          ctx.lineWidth = 1
+        }
         ctx.beginPath()
         ctx.moveTo(0, canvas.height * (i + 1) / grid)
         ctx.lineTo(canvas.width, canvas.height * (i + 1) / grid)
