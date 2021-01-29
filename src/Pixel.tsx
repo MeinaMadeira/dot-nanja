@@ -17,7 +17,7 @@ import './App.css'
 
 function Pixel() {
 
-  const drawerWidth = 240
+  const drawerWidth = 300
   const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -139,7 +139,7 @@ function Pixel() {
     const ctxB =  canvasB.getContext('2d')
     
     if(ctxA != null && ctxB != null){
-      console.log(canvasB.width/grid)
+      ctxB.clearRect(0,0,640,640)
       var gridSizeA = canvasA.width / grid
       var gridSizeB = canvasB.width / grid
       
@@ -192,10 +192,10 @@ function Pixel() {
               data[j + 3]  = 0
             }
           }
-          ctxB.strokeStyle = 'rgba('+ pRed +','+ pGreen +',' + pBlue + ',' + pAlpha / 255 + ')' 
-          ctxB.fillStyle = 'rgba('+ pRed +','+ pGreen +',' + pBlue + ',' + pAlpha / 255  + ')' 
-          ctxB.fillRect(m * gridSizeB,n * gridSizeB,gridSizeB,gridSizeB)  
-          //ctxB.putImageData(imageData,m * gridSizeB,n * gridSizeB,0,0,gridSizeB,gridSizeB)
+          var color = 'rgba('+ pRed +','+ pGreen +',' + pBlue + ',' + pAlpha / 255 + ')' 
+          drawPixelSquare(ctxB, color,gridSizeB,m,n)
+          //drawPixelCircle(ctxB, color,gridSizeB,m,n)
+
         }
       }
       if(gridSwitch === 1){
@@ -204,6 +204,22 @@ function Pixel() {
       //
     }
   }
+
+  const drawPixelSquare = (ctx: CanvasRenderingContext2D, color: string, gridSize: number, m: number, n: number) => {
+    ctx.strokeStyle = color
+    ctx.fillStyle = color 
+    ctx.fillRect(m * gridSize,n * gridSize,gridSize,gridSize)  
+  }
+
+  const drawPixelCircle= (ctx: CanvasRenderingContext2D, color: string, gridSize: number, m: number, n: number) => {
+          ctx.beginPath ()
+          ctx.arc(m * gridSize + gridSize / 2, n * gridSize + gridSize / 2, (gridSize / 2) - 1, 0 * Math.PI / 180, 360 * Math.PI / 180, false )
+          ctx.strokeStyle = color
+          ctx.fillStyle = color 
+          ctx.fill() 
+          ctx.stroke()
+  }
+
 
   const reduceColor8 = (pictData: number) => {
     var result = 0
@@ -303,11 +319,12 @@ function Pixel() {
           />
           <Divider />
           <FormControl component="fieldset">
-            <FormLabel component="legend">ピクセル幅数選択</FormLabel>
+            <FormLabel component="legend">ピクセル数選択</FormLabel>
             <RadioGroup name="grid" defaultValue="32" onChange={handleGrid} row>
-              <FormControlLabel value="16" control={<Radio  color="primary" />} label="16x16" labelPlacement="bottom" />
-              <FormControlLabel value="32" control={<Radio  color="primary" />} label="32x32" labelPlacement="bottom" />
-              <FormControlLabel value="64" control={<Radio  color="primary" />} label="64x64" labelPlacement="bottom" />
+              <FormControlLabel value="16" control={<Radio  color="primary" />} label="16" labelPlacement="bottom" />
+              <FormControlLabel value="32" control={<Radio  color="primary" />} label="32" labelPlacement="bottom" />
+              <FormControlLabel value="64" control={<Radio  color="primary" />} label="64" labelPlacement="bottom" />
+              <FormControlLabel value="128" control={<Radio  color="primary" />} label="128" labelPlacement="bottom" />
             </RadioGroup> 
           </FormControl>
 
