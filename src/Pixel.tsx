@@ -111,7 +111,7 @@ function Pixel() {
 
         if(ctxA != null && ctxB != null){
           ctxA.clearRect(0,0,240,240)
-          ctxB.clearRect(0,0,640,640)
+          ctxB.clearRect(0,0,512,512)
         }
         fileReader.onload = (event: ProgressEvent<FileReader>) => {
           img.onload = () => {
@@ -139,7 +139,7 @@ function Pixel() {
     const ctxB =  canvasB.getContext('2d')
     
     if(ctxA != null && ctxB != null){
-      ctxB.clearRect(0,0,640,640)
+      ctxB.clearRect(0,0,512,512)
       var gridSizeA = canvasA.width / grid
       var gridSizeB = canvasB.width / grid
       
@@ -201,7 +201,6 @@ function Pixel() {
       if(gridSwitch === 1){
         drawGrid()
       }
-      //
     }
   }
 
@@ -357,7 +356,7 @@ function Pixel() {
 
       <main className={classes.content}>
         <Toolbar />  
-        <canvas id="postCanvas" width="640" height="640" ></canvas>
+        <canvas id="postCanvas" width="512" height="512" ></canvas>
       </main>
     </div>
 
