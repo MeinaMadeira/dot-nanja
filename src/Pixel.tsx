@@ -10,7 +10,9 @@ import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import MenuIcon from '@material-ui/icons/Menu'
+import PublishIcon from '@material-ui/icons/Publish'
+import SettingsIcon from '@material-ui/icons/Settings'
+import ReplayIcon from '@material-ui/icons/Replay'
 import Button from '@material-ui/core/Button'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormControl from '@material-ui/core/FormControl'
@@ -84,9 +86,9 @@ function Pixel() {
   )
   const classes = useStyles()
   const theme = useTheme()
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false)
 
-
+  const [originImg, setOriginImg] = useState<HTMLImageElement>()
   const [grid, setGrid] = useState(32)
   const [gridSwitch, setGridSwitch] = useState(0)
   const [bright, setBright] = useState(27)
@@ -148,26 +150,23 @@ function Pixel() {
       if(file !== undefined){
         const fileReader = new FileReader()
         const img = new Image()
-        const canvasA = document.getElementById("prevCanvas") as HTMLCanvasElement
-        const canvasB = document.getElementById("postCanvas") as HTMLCanvasElement
+        const canvas = document.getElementById("postCanvas") as HTMLCanvasElement
+        const ctx =  canvas.getContext('2d')
 
-        const ctxA =  canvasA.getContext('2d')
-        const ctxB =  canvasB.getContext('2d')
-
-        if(ctxA != null && ctxB != null){
-          ctxA.clearRect(0,0,240,240)
-          ctxB.clearRect(0,0,512,512)
+        if(ctx != null){
+          ctx.clearRect(0,0,512,512)
         }
         fileReader.onload = (event: ProgressEvent<FileReader>) => {
           img.onload = () => {
-            if(ctxA != null){
+            if(ctx != null){
               var imgSize = 0
               if(img.width > img.height){
                 imgSize = img.width
               }else{
                 imgSize = img.height
               }
-              ctxA.drawImage(img,0,0,imgSize,imgSize,0,0,240,240)
+              setOriginImg(img)
+              ctx.drawImage(img,0,0,imgSize,imgSize,0,0,512,512)
             }
           } 
           img.src = event.target?.result as string 
@@ -178,19 +177,16 @@ function Pixel() {
   }
 
   const pixelize = () => {
-    const canvasA = document.getElementById("prevCanvas") as HTMLCanvasElement
-    const canvasB = document.getElementById("postCanvas") as HTMLCanvasElement
-    const ctxA =  canvasA.getContext('2d')
-    const ctxB =  canvasB.getContext('2d')
+    drawOriginImg()
+    const canvas = document.getElementById("postCanvas") as HTMLCanvasElement
+    const ctx = canvas.getContext('2d')
     
-    if(ctxA != null && ctxB != null){
-      ctxB.clearRect(0,0,512,512)
-      var gridSizeA = canvasA.width / grid
-      var gridSizeB = canvasB.width / grid
+    if(ctx != null){
+      var gridSize = canvas.width / grid
       
       for (var m = 0; m < grid; m += 1) {
         for (var n = 0; n < grid; n += 1) {
-          var imageData = ctxA.getImageData(m * gridSizeA,n * gridSizeA,gridSizeA,gridSizeA)
+          var imageData = ctx.getImageData(m * gridSize,n * gridSize,gridSize,gridSize)
           var data = imageData.data
           var pRed = 0
           var pGreen = 0
@@ -238,9 +234,7 @@ function Pixel() {
             }
           }
           var color = 'rgba('+ pRed +','+ pGreen +',' + pBlue + ',' + pAlpha / 255 + ')' 
-          drawPixelSquare(ctxB, color,gridSizeB,m,n)
-          //drawPixelCircle(ctxB, color,gridSizeB,m,n)
-
+          drawPixelSquare(ctx, color,gridSize,m,n)
         }
       }
       if(gridSwitch === 1){
@@ -255,7 +249,8 @@ function Pixel() {
     ctx.fillRect(m * gridSize,n * gridSize,gridSize,gridSize)  
   }
 
-  const drawPixelCircle= (ctx: CanvasRenderingContext2D, color: string, gridSize: number, m: number, n: number) => {
+  /** 
+  const drawPixelCircle = (ctx: CanvasRenderingContext2D, color: string, gridSize: number, m: number, n: number) => {
           ctx.beginPath ()
           ctx.arc(m * gridSize + gridSize / 2, n * gridSize + gridSize / 2, (gridSize / 2) - 1, 0 * Math.PI / 180, 360 * Math.PI / 180, false )
           ctx.strokeStyle = color
@@ -263,7 +258,7 @@ function Pixel() {
           ctx.fill() 
           ctx.stroke()
   }
-
+*/
 
   const reduceColor8 = (pictData: number) => {
     var result = 0
@@ -299,6 +294,23 @@ function Pixel() {
       result = 224
     }
     return result
+  }
+
+  const drawOriginImg = () => {
+    const canvas = document.getElementById("postCanvas") as HTMLCanvasElement
+    const ctx =  canvas.getContext('2d')
+    if(ctx != null){
+      ctx.clearRect(0,0,512,512)
+      if(originImg != null){
+        var imgSize = 0
+        if(originImg.width > originImg.height){
+          imgSize = originImg.width
+        }else{
+          imgSize = originImg.height
+        }
+        ctx.drawImage(originImg,0,0,imgSize,imgSize,0,0,512,512)
+        }
+      }
   }
 
   const drawGrid = () => {
@@ -342,7 +354,7 @@ function Pixel() {
           onClick={handleDrawerOpen}
           className={clsx(open && classes.hide)}
           >
-            <MenuIcon />
+            <SettingsIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
@@ -354,6 +366,18 @@ function Pixel() {
       >
         <div className={classes.drawerHeader} />
         <canvas id="postCanvas" width="512" height="512" ></canvas>
+
+        <Button component="label">
+          <PublishIcon />
+          <input type="file" id="pict" onChange={handleImage} style={{ display: "none" }} />
+        </Button>
+        
+        <Button onClick={drawOriginImg}>
+          <ReplayIcon />
+        </Button>
+
+        <Button variant="contained" onClick={pixelize}>変換！</Button>
+
       </main>
 
       <Drawer
@@ -370,13 +394,7 @@ function Pixel() {
             {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </div>
-
-        <Divider />   
-        <canvas id="prevCanvas" width="240" height="240" ></canvas>
-        <Button variant="contained" component="label">
-          ファイルを選択
-          <input type="file" id="pict" onChange={handleImage} style={{ display: "none" }} />
-        </Button>
+        
         <Divider />
         <FormControlLabel
           control={
@@ -423,7 +441,6 @@ function Pixel() {
           </RadioGroup> 
         </FormControl>
         <Divider />
-        <Button variant="contained" onClick={pixelize}>変換！</Button>
       </Drawer>        
     </div>
 
