@@ -1,10 +1,16 @@
 import React, {useState} from 'react'
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
+import clsx from 'clsx'
+import { createStyles, useTheme, Theme, makeStyles } from '@material-ui/core/styles'
+import Drawer from '@material-ui/core/Drawer'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
+import CssBaseline from '@material-ui/core/CssBaseline'
 import Typography from '@material-ui/core/Typography'
-import Drawer from '@material-ui/core/Drawer'
 import Divider from '@material-ui/core/Divider'
+import IconButton from '@material-ui/core/IconButton'
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
+import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import MenuIcon from '@material-ui/icons/Menu'
 import Button from '@material-ui/core/Button'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormControl from '@material-ui/core/FormControl'
@@ -22,16 +28,26 @@ function Pixel() {
   createStyles({
     root: {
       display: 'flex',
-      flexGrow: 1,
     },
-    menuButton: {
-      marginRight: theme.spacing(2),
+    appBar: {
+      transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+    },
+    appBarShift: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginRight: drawerWidth,
     },
     title: {
       flexGrow: 1,
     },
-    appBar: {
-      zIndex: theme.zIndex.drawer + 1,
+    hide: {
+      display: 'none',
     },
     drawer: {
       width: drawerWidth,
@@ -40,20 +56,49 @@ function Pixel() {
     drawerPaper: {
       width: drawerWidth,
     },
-    drawerContainer: {
-      overflow: 'auto',
+    drawerHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: theme.spacing(0, 1),
+      // necessary for content to be below app bar
+      ...theme.mixins.toolbar,
+      justifyContent: 'flex-start',
     },
     content: {
       flexGrow: 1,
       padding: theme.spacing(3),
+      transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+      marginRight: -drawerWidth,
+    },
+    contentShift: {
+      transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginRight: 0,
     },
   })
   )
   const classes = useStyles()
+  const theme = useTheme()
+  const [open, setOpen] = React.useState(false)
+
+
   const [grid, setGrid] = useState(32)
   const [gridSwitch, setGridSwitch] = useState(0)
   const [bright, setBright] = useState(27)
   const [brightSwitch, setBrightSwitch] = useState(0)
+
+  const handleDrawerOpen = () => {
+    setOpen(true)
+  }
+
+  const handleDrawerClose = () => {
+    setOpen(false)
+  }
 
   const handleGrid = (hIEvent: React.ChangeEvent<HTMLInputElement>) => {
     if(hIEvent.target.value != null){
@@ -281,83 +326,105 @@ function Pixel() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="fixed" className={classes.appBar}>
-          <Toolbar>
-            <Typography variant="h4" align="left" className={classes.title}>
-              ピクセルアートフィルター
-            </Typography>
-          </Toolbar>
+      <CssBaseline />
+      <AppBar position="fixed"
+        className={clsx(classes.appBar, {
+          [classes.appBarShift]: open,
+        })}>
+        <Toolbar>
+          <Typography variant="h4" noWrap className={classes.title}>
+            ピクセルアートフィルター
+          </Typography>
+          <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          edge="end"
+          onClick={handleDrawerOpen}
+          className={clsx(open && classes.hide)}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Toolbar>
       </AppBar>
+
+      <main
+        className={clsx(classes.content, {
+          [classes.contentShift]: open,
+        })}
+      >
+        <div className={classes.drawerHeader} />
+        <canvas id="postCanvas" width="512" height="512" ></canvas>
+      </main>
+
       <Drawer
         className={classes.drawer}
-        variant="permanent"
+        variant="persistent"
+        anchor="right"
+        open={open}
         classes={{
           paper: classes.drawerPaper,
         }}
       >
-        <Toolbar />
-        <div className={classes.drawerContainer}>
-          <canvas id="prevCanvas" width="240" height="240" ></canvas>
-
-          <Button variant="contained" component="label">
-            ファイルを選択
-            <input type="file" id="pict" onChange={handleImage} style={{ display: "none" }} />
-          </Button>
-          <Divider />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={gridSwitch === 1}
-                onChange={switchGrid}
-                name="gridSwitch"
-                value={gridSwitch}
-                color="primary"
-              />
-            }
-            label="グリッドを描画する"
-          />
-          <Divider />
-          <FormControl component="fieldset">
-            <FormLabel component="legend">ピクセル数選択</FormLabel>
-            <RadioGroup name="grid" defaultValue="32" onChange={handleGrid} row>
-              <FormControlLabel value="16" control={<Radio  color="primary" />} label="16" labelPlacement="bottom" />
-              <FormControlLabel value="32" control={<Radio  color="primary" />} label="32" labelPlacement="bottom" />
-              <FormControlLabel value="64" control={<Radio  color="primary" />} label="64" labelPlacement="bottom" />
-              <FormControlLabel value="128" control={<Radio  color="primary" />} label="128" labelPlacement="bottom" />
-            </RadioGroup> 
-          </FormControl>
-
-          <Divider />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={brightSwitch === 1}
-                onChange={switchBright}
-                name="switchBright"
-                value={brightSwitch}
-                color="primary"
-              />
-            }
-            label="減色処理をする"
-          />
-          
-          <FormControl component="fieldset">
-            <RadioGroup name="bright" defaultValue="27" onChange={handleBright} row>
-              <FormControlLabel value="8" control={<Radio  color="primary" disabled={brightSwitch === 0} />} label="8色" labelPlacement="bottom" />
-              <FormControlLabel value="27" control={<Radio  color="primary" disabled={brightSwitch === 0} />} label="27色" labelPlacement="bottom" />
-              <FormControlLabel value="64" control={<Radio  color="primary" disabled={brightSwitch === 0} />} label="64色" labelPlacement="bottom" />
-            </RadioGroup> 
-          </FormControl>
-
-          <Divider />
-          <Button variant="contained" onClick={pixelize}>変換！</Button>
+        <div className={classes.drawerHeader}>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
         </div>
-      </Drawer>
 
-      <main className={classes.content}>
-        <Toolbar />  
-        <canvas id="postCanvas" width="512" height="512" ></canvas>
-      </main>
+        <Divider />   
+        <canvas id="prevCanvas" width="240" height="240" ></canvas>
+        <Button variant="contained" component="label">
+          ファイルを選択
+          <input type="file" id="pict" onChange={handleImage} style={{ display: "none" }} />
+        </Button>
+        <Divider />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={gridSwitch === 1}
+              onChange={switchGrid}
+              name="gridSwitch"
+              value={gridSwitch}
+              color="primary"
+            />
+          }
+          label="グリッドを描画する"
+        />
+        <Divider />
+        <FormControl component="fieldset">
+          <FormLabel component="legend">ピクセル数選択</FormLabel>
+          <RadioGroup name="grid" defaultValue="32" onChange={handleGrid} row>
+            <FormControlLabel value="16" control={<Radio  color="primary" />} label="16" labelPlacement="bottom" />
+            <FormControlLabel value="32" control={<Radio  color="primary" />} label="32" labelPlacement="bottom" />
+            <FormControlLabel value="64" control={<Radio  color="primary" />} label="64" labelPlacement="bottom" />
+            <FormControlLabel value="128" control={<Radio  color="primary" />} label="128" labelPlacement="bottom" />
+          </RadioGroup> 
+        </FormControl>
+        <Divider />
+
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={brightSwitch === 1}
+              onChange={switchBright}
+              name="switchBright"
+              value={brightSwitch}
+              color="primary"
+            />
+          }
+          label="減色処理をする"
+        />
+          
+        <FormControl component="fieldset">
+          <RadioGroup name="bright" defaultValue="27" onChange={handleBright} row>
+            <FormControlLabel value="8" control={<Radio  color="primary" disabled={brightSwitch === 0} />} label="8色" labelPlacement="bottom" />
+            <FormControlLabel value="27" control={<Radio  color="primary" disabled={brightSwitch === 0} />} label="27色" labelPlacement="bottom" />
+            <FormControlLabel value="64" control={<Radio  color="primary" disabled={brightSwitch === 0} />} label="64色" labelPlacement="bottom" />
+          </RadioGroup> 
+        </FormControl>
+        <Divider />
+        <Button variant="contained" onClick={pixelize}>変換！</Button>
+      </Drawer>        
     </div>
 
   )
