@@ -12,6 +12,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import PublishIcon from '@material-ui/icons/Publish'
 import SettingsIcon from '@material-ui/icons/Settings'
+import SendIcon from '@material-ui/icons/Send'
 import ReplayIcon from '@material-ui/icons/Replay'
 import Button from '@material-ui/core/Button'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
@@ -353,6 +354,7 @@ function Pixel() {
           edge="end"
           onClick={handleDrawerOpen}
           className={clsx(open && classes.hide)}
+          title="詳細設定" 
           >
             <SettingsIcon />
           </IconButton>
@@ -366,17 +368,21 @@ function Pixel() {
       >
         <div className={classes.drawerHeader} />
         <canvas id="postCanvas" width="512" height="512" ></canvas>
+        <div>
+          <Button title="ファイルを選択" variant="contained"　color="primary" component="label">
+            ファイルを選択<PublishIcon />
+            <input type="file" id="pict" onChange={handleImage} style={{ display: "none" }} />
+          </Button>
 
-        <Button component="label">
-          <PublishIcon />
-          <input type="file" id="pict" onChange={handleImage} style={{ display: "none" }} />
-        </Button>
-        
-        <Button onClick={drawOriginImg}>
-          <ReplayIcon />
-        </Button>
+          <Button title="ドットに変換" variant="contained"　color="primary" onClick={pixelize}>
+            ドットに変換<SendIcon />
+          </Button>
 
-        <Button variant="contained" onClick={pixelize}>変換！</Button>
+          <Button title="元に戻す" variant="contained"　color="primary" onClick={drawOriginImg}>
+            元に戻す<ReplayIcon />
+          </Button>
+        </div>
+
 
       </main>
 
@@ -392,7 +398,11 @@ function Pixel() {
         <div className={classes.drawerHeader}>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            <Typography variant="h5" noWrap >
+              詳細設定
+            </Typography>
           </IconButton>
+
         </div>
         
         <Divider />
